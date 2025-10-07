@@ -1,130 +1,215 @@
-# Grant Discovery and Application Assistant
+# AI-Powered Grant Application Assistant
 
-This project is designed to help nonprofit organizations identify relevant grant opportunities and generate draft applications that sound natural and reflect their mission and voice. The system learns from past grant materials and helps streamline the overall grant-seeking process.
+Building intelligent grant discovery and application generation for nonprofit organizations using local AI models and retrieval-augmented generation.
 
 ## Overview
 
-We built this system for Cambio Labs, a nonprofit focused on educational technology and social entrepreneurship. The project works by processing organizational documents, finding matching grants, and generating drafts that sound consistent with how the organization usually writes. The goal is to make the grant application process faster, more focused, and more accessible for nonprofit teams.
+This system helps Cambio Labs automatically discover relevant grant opportunities and generate draft applications using their organizational voice and past successful grant examples. The entire system runs locally using open-source models, maintaining data privacy while providing powerful AI capabilities.
 
-## Features
+## Key Features
 
-- **Document Analysis**: Reads and summarizes existing grant applications to understand tone, mission statements, and impact areas.
-- **Grant Discovery**: Searches publicly available databases like Grants.gov and foundation listings to find matching opportunities.
-- **Draft Generation**: Creates first-pass drafts using the organization’s voice, which can then be refined by the team.
-- **Refinement Cycle**: Allows us to improve drafts over multiple rounds of feedback.
-- **Local Execution**: Works entirely on local infrastructure without relying on external services.
+**Document Processing**: Analyzes 47+ past grant applications to extract Cambio Labs' organizational voice, mission statements, and successful application patterns
 
-## Tech Stack
+**Grant Discovery**: Searches federal databases and foundation websites to identify relevant funding opportunities matching organizational priorities
 
-- **Frontend**: Streamlit
-- **Language Model**: Ollama running LLaMA 3.1 (8B)
-- **Vector Storage**: ChromaDB
-- **Embeddings**: BGE-small-en-v1.5 from HuggingFace
-- **Web Scraping**: BeautifulSoup and Selenium
+**Application Generation**: Uses RAG (Retrieval-Augmented Generation) to draft grant applications maintaining authentic organizational voice and incorporating relevant past examples
 
-## Requirements
+**Application Refinement**: Iterative improvement system allowing review and enhancement of generated content
 
-- Python 3.9 or higher
-- At least 16GB of RAM (64GB recommended for heavier workloads)
-- Ollama installed ([installation guide](https://ollama.ai))
+## Technical Architecture
 
-## Quick Start
+**LLM**: Ollama with Llama 3.1 8B (local inference, zero API costs)
 
-1. Clone the repository:
+**Vector Database**: ChromaDB for persistent storage of document embeddings
 
+**Embeddings**: HuggingFace BAAI/bge-small-en-v1.5 (runs locally on CPU)
+
+**Web Interface**: Streamlit for rapid prototyping and user interaction
+
+**Web Scraping**: BeautifulSoup and Selenium for grant discovery automation
+
+## System Requirements
+
+**Minimum Requirements**:
+- 8GB RAM (16GB recommended)
+- 10GB free disk space for models and data
+- Modern CPU (Intel i5 or equivalent)
+
+**Your System** (more than sufficient):
+- Intel i7-8850H @ 2.60GHz
+- 64GB RAM
+- 4GB Graphics
+
+## Installation
+
+### Prerequisites
+
+Install Ollama for local LLM inference:
 ```bash
-git clone https://github.com/BasirS/grantlab.git
-cd grantlab
-```
-
-2. Install Ollama and pull the model:
-
-```bash
+# Download from https://ollama.ai
+# After installation, pull the model:
 ollama pull llama3.1:8b
 ```
 
-3. Set up the Python environment:
+### Setup
 
 ```bash
+# Clone the repository
+git clone <your-repo-url>
+cd grant-assistant
+
+# Create environment file
+cp .env.example .env
+
+# Install Python dependencies
 pip install -r requirements.txt
 ```
 
-4. Configure your environment variables:
+### Configuration
 
-```bash
-cp .env.example .env
+Edit `.env` file with your settings:
 ```
-Then update the `.env` file with your local settings.
+OLLAMA_MODEL=llama3.1:8b
+EMBEDDING_MODEL=BAAI/bge-small-en-v1.5
+CHROMA_PERSIST_DIR=./data/chroma
+```
 
-5. Run the application:
+## Running the Application
 
 ```bash
 streamlit run app.py
 ```
 
-Once launched, open the browser and visit [http://localhost:8501](http://localhost:8501).
+The application will be available at `http://localhost:8501`
 
 ## Project Structure
 
 ```
 grant-assistant/
-├── app.py                        # Main Streamlit application
-├── requirements.txt              # Dependencies
-├── .env.example                  # Environment template
-├── README.md                     # Project documentation
+├── app.py                      # Main Streamlit application
+├── requirements.txt            # Python dependencies
+├── .env.example               # Environment template
+├── README.md                  # This file
 │
 ├── src/
-│   ├── processing/               # Document analysis
-│   │   └── document_processor.py
-│   ├── rag/                      # Retrieval and generation modules
-│   │   ├── vector_store.py
-│   │   └── retriever.py
-│   ├── discovery/                # Grant search system
-│   │   └── grant_scraper.py
-│   └── generation/               # Draft generation logic
-│       └── generator.py
+│   ├── processing/
+│   │   └── document_processor.py    # Grant document analysis
+│   ├── rag/
+│   │   ├── vector_store.py          # ChromaDB operations
+│   │   └── retriever.py             # Semantic search
+│   ├── discovery/
+│   │   └── grant_scraper.py         # Web scraping for grants
+│   └── generation/
+│       └── application_generator.py  # LLM-powered writing
 │
-├── config/                       # Configuration and settings
-│   └── settings.py
+├── config/
+│   └── settings.py            # Configuration management
 │
-└── examples/                     # Sample grant materials
-    └── cambio_grants/
+├── examples/
+│   └── grants/                # Cambio Labs grant examples (47+ files)
+│       ├── AWS/
+│       ├── BRL/
+│       └── AI_Economic/
+│
+└── data/                      # Created automatically
+    ├── chroma/                # Vector database
+    └── processed/             # Cached embeddings
 ```
 
-## How to Use
+## Usage Guide
 
-### Processing Documents
-The system starts by analyzing grant applications in the `examples/` folder. This helps it learn the writing style and tone used by the organization.
+### 1. Document Processing
 
-### Discovering Grants
-In the Grant Discovery tab, we can search for new opportunities based on focus areas or mission keywords.
+Upload or select from 47+ existing Cambio Labs grant applications. The system extracts:
+- Organizational mission and values
+- Program descriptions and impact metrics
+- Writing style and tone patterns
+- Successful application structures
 
-### Generating Applications
-After selecting a grant, the Application Generation tab lets us create a draft application using the voice patterns learned earlier.
+### 2. Grant Discovery
 
-### Refining Results
-Through the Refinement tab, we can adjust and improve the drafts based on team feedback.
+Search for relevant opportunities by:
+- Keywords (e.g., "education technology", "workforce development")
+- Funding amount ranges
+- Geographic focus
+- Application deadlines
 
-## Configuration
+### 3. Application Generation
 
-Main parameters can be adjusted in `config/settings.py`:
-- Embedding model type
-- Model generation parameters
-- Vector database configuration
-- Search behavior
+Generate draft applications by:
+- Selecting discovered grant opportunity
+- Choosing relevant organizational programs to highlight
+- Specifying grant-specific requirements
+- Reviewing generated draft with citations to source documents
 
-## Contribution and Credits
+### 4. Application Refinement
 
-This project was created as part of the Break Through Tech AI Studio program in collaboration with Cambio Labs.
+Iteratively improve drafts through:
+- Feedback on tone, structure, or content
+- Adding specific details or metrics
+- Adjusting emphasis on different programs
+- Final review and export
 
-- Cambio Labs provided organizational data and feedback.
-- Break Through Tech AI Studio supported the project framework.
-- Angelo Orciuoli served as a technical advisor.
+## Development Timeline
+
+**Phase 1 (Weeks 1-4)**: Local infrastructure setup, document processing pipeline, basic RAG implementation
+
+**Phase 2 (Weeks 5-8)**: Grant discovery automation, application generation with organizational voice
+
+**Phase 3 (Weeks 9-12)**: Refinement system, user interface polish, deployment preparation
+
+## Key Technical Decisions
+
+**Why Local Models?**
+- Zero ongoing API costs
+- Complete data privacy for sensitive grant documents
+- Educational value in understanding RAG fundamentals
+- Works offline without internet dependency
+
+**Why ChromaDB?**
+- Persistent vector storage across sessions
+- Efficient similarity search on modest hardware
+- Native Python integration with LlamaIndex
+- Easy backup and version control
+
+**Why Streamlit?**
+- Rapid prototyping and iteration
+- Python-native development
+- Built-in state management
+- Easy deployment options
+
+## Troubleshooting
+
+**Ollama connection failed**: Ensure Ollama service is running: `ollama serve`
+
+**Out of memory errors**: Reduce batch size in `config/settings.py` or use smaller embedding model
+
+**Slow document processing**: First run downloads embedding model (~400MB), subsequent runs are faster
+
+**Missing grant examples**: Ensure `examples/grants/` directory contains sample documents
+
+## Future Enhancements
+
+- Mobile-responsive interface for grant review
+- Email notifications for new grant opportunities
+- Integration with Cambio Labs' existing CRM
+- Multi-language support for international grants
+- Advanced grant matching using machine learning
+
+## Contributing
+
+This is a student project for Cambio Labs. For questions or contributions, contact the development team.
 
 ## License
 
-This project is intended for educational and nonprofit use.
+Educational project for Cambio Labs. Not licensed for commercial use.
 
-## Contact
+## Acknowledgments
 
-For questions, please reach out through the Break Through Tech AI Studio program.
+Built for Cambio Labs' mission to empower underestimated BIPOC youth and adults through technology and innovation.
+
+**Technical Guidance**: Angelo Orciuoli (Cambio Labs)
+
+**Academic Support**: Break Through Tech AI Studio Program
+
+**Tools**: Ollama, LlamaIndex, ChromaDB, Streamlit, HuggingFace
