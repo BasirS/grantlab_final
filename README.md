@@ -33,8 +33,8 @@ We built this system for Cambio Labs, a nonprofit focused on educational technol
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/grant-assistant.git
-cd grant-assistant
+git clone https://github.com/BasirS/grantlab.git
+cd grantlab
 ```
 
 2. Install Ollama and pull the model:
