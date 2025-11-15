@@ -160,7 +160,7 @@ The right question is not "can we build a complex multi-agent system for grant w
 
 This repository exists to show the journey, not just the destination. Sometimes the most valuable thing you learn from a project is what not to build next time.
 
-Built by Abdul Basir for Cambio Labs
+Built by Basir Abdul Samad for Cambio Labs
 Version: Research/Experimental
 Status: Not recommended for production use
 Alternative: https://github.com/BasirS/grantlab_cloud_system
