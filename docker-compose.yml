@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # postgresql database with pgvector extension
+  db:
+    image: ankane/pgvector:latest
+    container_name: cambio_grants_db
+    environment:
+      POSTGRES_USER: cambio
+      POSTGRES_PASSWORD: cambio_password_change_in_production
+      POSTGRES_DB: cambio_grants
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cambio -d cambio_grants"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # redis cache for semantic caching (optional but recommended)
+  redis:
+    image: redis:7-alpine
+    container_name: cambio_grants_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # fastapi application
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cambio_grants_api
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://cambio:cambio_password_change_in_production@db:5432/cambio_grants
+      - REDIS_URL=redis://redis:6379/0
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_ORG_ID=${OPENAI_ORG_ID}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - LANGFUSE_PUBLIC_KEY=${LANGFUSE_PUBLIC_KEY}
+      - LANGFUSE_SECRET_KEY=${LANGFUSE_SECRET_KEY}
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data/uploads:/app/data/uploads
+      - ./src:/app/src
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # optional: pgadmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: cambio_grants_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@cambiolabs.org
+      PGADMIN_DEFAULT_PASSWORD: admin_password_change_in_production
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  redis_data:
+    driver: local
