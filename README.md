@@ -1,6 +1,6 @@
 # GrantLab Multi-Agent System
 
-An experimental multi-agent architecture for automated grant writing (research phase)
+An experimental multi-agent architecture for automated grant writing (research phase - Fall '25 AI Studio project).
 
 ## What This Was
 
