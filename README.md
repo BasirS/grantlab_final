@@ -18,6 +18,8 @@ That realization led to the cloud approach, which you can find at https://github
 
 ## Architecture Overview
 
+![Major Flowchart](images/multi_agent_system_flowchart.png)
+
 The system was designed with four specialized agents working together through LangGraph orchestration.
 
 The ResearchAgent pulls requirements from RFPs and finds similar past grants from the database. It extracts what funders want, searches through 59 historical grant applications for relevant examples, and gathers organizational context about Cambio Labs programs, metrics, and voice.
